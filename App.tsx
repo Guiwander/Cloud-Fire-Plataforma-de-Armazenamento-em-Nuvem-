@@ -900,7 +900,122 @@ export default function App() {
                         </div>
                     </div>
                 )}
-                {/* Simplified Admin sections for brevity, using same logic as previous step */}
+                
+                {adminTab === 'users' && (
+                    <div className="space-y-6">
+                        <h1 className="text-2xl font-bold text-slate-800">Gerenciar Usuários</h1>
+                        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                            <table className="w-full text-left border-collapse">
+                                <thead className="bg-slate-50 text-slate-500 text-xs uppercase font-semibold">
+                                    <tr>
+                                        <th className="p-4">Usuário</th>
+                                        <th className="p-4">Plano / Role</th>
+                                        <th className="p-4">Armazenamento</th>
+                                        <th className="p-4">Status</th>
+                                        <th className="p-4 text-right">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100">
+                                    {adminUsers.map(u => (
+                                        <tr key={u.id} className="hover:bg-slate-50 transition-colors">
+                                            <td className="p-4">
+                                                <div className="flex items-center gap-3">
+                                                    <img src={u.avatar} className="w-10 h-10 rounded-full bg-slate-200" alt="" />
+                                                    <div>
+                                                        <div className="font-medium text-slate-800">{u.username}</div>
+                                                        <div className="text-xs text-slate-400">{u.email}</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="p-4">
+                                                <div className="flex flex-col gap-1">
+                                                    <span className={`text-xs px-2 py-0.5 rounded-full w-fit font-medium ${u.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-slate-100 text-slate-600'}`}>
+                                                        {u.role}
+                                                    </span>
+                                                    <span className={`text-xs px-2 py-0.5 rounded-full w-fit font-medium ${u.plan === 'pro' ? 'bg-yellow-100 text-yellow-700' : 'bg-blue-100 text-blue-700'}`}>
+                                                        {u.plan}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td className="p-4">
+                                                <div className="w-32">
+                                                    <div className="flex justify-between text-xs mb-1 text-slate-500">
+                                                        <span>{Math.round((u.storageUsed / u.storageLimit) * 100)}%</span>
+                                                    </div>
+                                                    <div className="w-full bg-slate-200 rounded-full h-1.5">
+                                                        <div className="bg-blue-500 h-1.5 rounded-full" style={{width: `${Math.min(100, (u.storageUsed / u.storageLimit) * 100)}%`}}></div>
+                                                    </div>
+                                                    <div className="text-xs text-slate-400 mt-1">{formatSize(u.storageUsed)}</div>
+                                                </div>
+                                            </td>
+                                            <td className="p-4">
+                                                <button 
+                                                    onClick={() => handleAdminUpdateUser(u, { isActive: !u.isActive })}
+                                                    className={`text-xs px-3 py-1 rounded-full font-medium transition-colors ${u.isActive ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200'}`}
+                                                >
+                                                    {u.isActive ? 'Ativo' : 'Bloqueado'}
+                                                </button>
+                                            </td>
+                                            <td className="p-4 text-right">
+                                                <Button variant="ghost" className="text-red-500 hover:bg-red-50 p-2" onClick={() => handleAdminDeleteUser(u.username)}>
+                                                    <Trash2 size={16} />
+                                                </Button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                            {adminUsers.length === 0 && <div className="p-8 text-center text-slate-400">Nenhum usuário encontrado.</div>}
+                        </div>
+                    </div>
+                )}
+
+                {adminTab === 'files' && (
+                    <div className="space-y-6">
+                        <h1 className="text-2xl font-bold text-slate-800">Todos os Arquivos (Global)</h1>
+                         <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                            <table className="w-full text-left border-collapse">
+                                <thead className="bg-slate-50 text-slate-500 text-xs uppercase font-semibold">
+                                    <tr>
+                                        <th className="p-4">Arquivo</th>
+                                        <th className="p-4">Tipo</th>
+                                        <th className="p-4">Tamanho</th>
+                                        <th className="p-4">Data</th>
+                                        <th className="p-4 text-right">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100">
+                                    {adminFiles.map(f => (
+                                        <tr key={f.id} className="hover:bg-slate-50 transition-colors">
+                                            <td className="p-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="p-2 bg-slate-100 rounded-lg">
+                                                        <FileIcon type={f.type} className="w-5 h-5" />
+                                                    </div>
+                                                    <div className="max-w-[200px] truncate font-medium text-slate-700" title={f.name}>{f.name}</div>
+                                                </div>
+                                                <div className="text-xs text-slate-400 mt-1 ml-10">ID: {f.id} • Owner: {f.ownerId}</div>
+                                            </td>
+                                            <td className="p-4 text-sm text-slate-600">{translateFileType(f.type)}</td>
+                                            <td className="p-4 text-sm text-slate-600 font-mono">{formatSize(f.size)}</td>
+                                            <td className="p-4 text-sm text-slate-500">{new Date(f.createdAt).toLocaleDateString()}</td>
+                                            <td className="p-4 text-right flex justify-end gap-2">
+                                                <Button variant="ghost" className="p-2 text-blue-500" onClick={() => handleDownload(f)}>
+                                                    <Download size={16} />
+                                                </Button>
+                                                <Button variant="ghost" className="p-2 text-red-500" onClick={() => handleAdminDeleteFile(f)}>
+                                                    <Trash2 size={16} />
+                                                </Button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                            {adminFiles.length === 0 && <div className="p-8 text-center text-slate-400">Nenhum arquivo encontrado no sistema.</div>}
+                        </div>
+                    </div>
+                )}
+
                 {adminTab === 'config' && (
                      <div className="space-y-6 max-w-2xl pb-10">
                         <div className="flex justify-between items-center">
