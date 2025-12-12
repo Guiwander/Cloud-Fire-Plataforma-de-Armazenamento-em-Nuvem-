@@ -87,3 +87,5 @@ armazenar conteúdo protegido por direitos autorais
 armazenamento ilegal de arquivos
 
 O objetivo é aprender cloud computing, React, integração S3 e boas práticas de arquitetura.
+
+você pode clonar esse repositorio no vscode: https://github.com/Guiwander/Cloud-Fire-Plataforma-de-Armazenamento-em-Nuvem-.git
